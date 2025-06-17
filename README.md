@@ -1,3 +1,7 @@
+# Microsoft BASIC for my 6502 breadboard computer (really close to [Ben Eater 6502 project](https://eater.net/6502))
+
+This code was forked from mist64/msbasic to experiment with my 6502 computer.
+
 # Microsoft BASIC for 6502
 
 This is a single integrated assembly source tree that can generate nine different versions of Microsoft BASIC for 6502.
