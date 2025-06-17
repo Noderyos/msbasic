@@ -11,3 +11,8 @@
 .ifdef SYM1
         jmp     PR_WRITTEN_BY
 .endif
+
+; To simplify call from Wozmon
+.ifdef NODERYOS
+        jmp COLD_START
+.endif
