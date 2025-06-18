@@ -12,4 +12,3 @@ flash: rom.bin
 
 clean:
 	rm -rf $(TMPDIR) $(OUTPUT)
-

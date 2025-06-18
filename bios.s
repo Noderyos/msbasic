@@ -2,6 +2,11 @@
 .debuginfo
 .segment "BIOS"
 
+PORTB = $6000
+PORTA = $6001
+DDRB = $6002
+DDRA = $6003
+
 ACIA_DATA	= $5000
 ACIA_STATUS	= $5001
 ACIA_CMD	= $5002

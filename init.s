@@ -23,6 +23,9 @@ COLD_START:
 .ifdef SYM1
         jsr     ACCESS
 .endif
+.ifdef NODERYOS
+        jsr     LCD_INIT
+.endif
 .ifdef KBD
         lda     #<LFD81
         sta     $03A0

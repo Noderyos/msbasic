@@ -4,6 +4,10 @@
 		keyword_rts "FOR", FOR
 		keyword_rts "NEXT", NEXT
 		keyword_rts "DATA", DATA
+.ifdef NODERYOS
+		keyword_rts "LCDINST", LCD_INST
+		keyword_rts "LCDSEND", LCD_SEND
+.endif
 .ifdef CONFIG_FILE
 		keyword_rts "INPUT#", INPUTH
 .endif
