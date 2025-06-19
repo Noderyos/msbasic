@@ -2,113 +2,136 @@
 
 .ifdef NODERYOS
 
-RS = %001
-RW = %010
-E  = %100
-
+RS = %0010000
+RW = %0100000
+E  = %1000000
 
 LCD_INIT:
-	PHA
+    LDA #%11111111
+    STA DDRA
 
-    LDA #$FF
-    STA DDRA       ; Set A to output
-    STA DDRB       ; Set B to output
-
-    LDA #%00111000 ; 8 bit; 2 lines; 5x8 font
+    ; Forcing 8-bit
+    LDA #%0011
     STA PORTA
-    LDA #$0
-    STA PORTB
-    LDA #E
-    STA PORTB
-    LDA #$0
-    STA PORTB
+    ORA #E
+    STA PORTA
+    EOR #E
+    STA PORTA
 
+    LDA #%0011
+    STA PORTA
+    ORA #E
+    STA PORTA
+    EOR #E
+    STA PORTA
+
+    LDA #%0011
+    STA PORTA
+    ORA #E
+    STA PORTA
+    EOR #E
+    STA PORTA
+
+    ; Switching to 4-bit
+    LDA #%0010
+    STA PORTA
+    ORA #E
+    STA PORTA
+    EOR #E
+    STA PORTA
+
+    LDA #%00101000 ; 4 bit; 2 lines; 5x8 font
+    JSR INST_SEND
     LDA #%00001110 ; Disp on; Cursor on; Blink off
-    STA PORTA
-    LDA #$0
-    STA PORTB
-    LDA #E
-    STA PORTB
-    LDA #$0
-    STA PORTB
-
+    JSR INST_SEND
     LDA #%00000110 ; Increment ptr; No shift
-    STA PORTA
-    LDA #$0
-    STA PORTB
-    LDA #E
-    STA PORTB
-    LDA #$0
-    STA PORTB
-
+    JSR INST_SEND
     LDA #%00000001 ; Clear display
-    JSR LCD_WAIT
-    STA PORTA
-    LDA #$0
-    STA PORTB
-    LDA #E
-    STA PORTB
-    LDA #$0
-    STA PORTB
-
-    PLA
+    JSR INST_SEND
     RTS
 
 
 LCD_WAIT:
     PHA
-
-    LDA #$0
+    LDA #%11110000  ; Set D0-D3 as input
     STA DDRA
 @lcd_busy:
     LDA #RW
-    STA PORTB
+    STA PORTA
     LDA #(RW | E)
-    STA PORTB
+    STA PORTA
     LDA PORTA
-    AND #$80
+    PHA
+    LDA #RW        ; Useless
+    STA PORTA      ; fetch but
+    LDA #(RW | E)  ; we need to
+    STA PORTA      ; complete
+    LDA PORTA      ; the 8-bit fetch
+    PLA
+    AND #%00001000
     BNE @lcd_busy
 
     LDA #RW
-    STA PORTB 
-    LDA #$FF
+    STA PORTA
+    LDA #%11111111
     STA DDRA
-
     PLA
     RTS
 
 
 LCD_INST:
-	PHA
-
     JSR GETBYT
     TXA
-	JSR LCD_WAIT
-	STA PORTA
-    LDA #$0
-    STA PORTB
-    LDA #E
-    STA PORTB
-    LDA #$0
-    STA PORTB
-	RTS
-
-
-LCD_SEND:
-	PHA
+INST_SEND:
     JSR LCD_WAIT
 
-    JSR GETBYT
-    TXA
+    PHA
+    LSR
+    LSR
+    LSR
+    LSR
     STA PORTA
-    LDA #RS
-    STA PORTB
-    LDA #(RS | E)
-    STA PORTB
-    LDA #RS
-    STA PORTB
+    ORA #E
+    STA PORTA
+    EOR #E
+    STA PORTA
 
     PLA
+    AND #$0f
+    STA PORTA
+    ORA #E
+    STA PORTA
+    EOR #E
+    STA PORTA
+
     RTS
 
+LCD_SEND:
+    JSR GETBYT
+    TXA
+DATA_SEND:
+    JSR LCD_WAIT
+
+    PHA
+    LSR
+    LSR
+    LSR
+    LSR
+    ORA #RS
+    STA PORTA
+    ORA #E
+    STA PORTA
+    EOR #E
+    STA PORTA
+
+    PLA
+    AND #$0f
+    ORA #RS
+    STA PORTA
+    ORA #E
+    STA PORTA
+    EOR #E
+    STA PORTA
+
+    RTS
 .endif
