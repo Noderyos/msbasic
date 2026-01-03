@@ -15,12 +15,8 @@ IN    = $0200                          ; Input buffer
 
 
 RESET:
-                JSR     INIT_BUF
+                JSR     SER_INIT
                 CLI
-                LDA     #$1F           ; 8-N-1, 19200 baud.
-                STA     ACIA_CTRL
-                LDA     #$09           ; No parity, no echo, rx interrupts.
-                STA     ACIA_CMD
                 LDA     #$1B           ; Begin with escape.
 
 NOTCR:

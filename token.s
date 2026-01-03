@@ -7,6 +7,7 @@
 .ifdef NODERYOS
 		keyword_rts "LCDINST", LCD_INST
 		keyword_rts "LCDSEND", LCD_SEND
+		keyword_rts "WOZMON", $FE00
 .endif
 .ifdef CONFIG_FILE
 		keyword_rts "INPUT#", INPUTH

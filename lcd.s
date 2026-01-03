@@ -106,6 +106,7 @@ INST_SEND:
 
     RTS
 
+
 LCD_SEND:
     JSR GETBYT
     TXA
