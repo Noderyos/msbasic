@@ -25,6 +25,7 @@ COLD_START:
 .endif
 .ifdef NODERYOS
         jsr     LCD_INIT
+        jsr     SPI_INIT
 .endif
 .ifdef KBD
         lda     #<LFD81

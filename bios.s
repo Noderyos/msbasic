@@ -22,10 +22,107 @@ ACIA_BUF = $0300
 
 ; Modifies:
 LOAD:
+    JSR SPI_ENABLE
+    LDA #$03 ; Read data bytes
+    JSR SPI_WRITE
+
+    LDA #$00 ; First block
+    JSR SPI_WRITE
+    LDA #$00
+    JSR SPI_WRITE
+    LDA #$00
+    JSR SPI_WRITE
+
+    ; Loading *TAB
+    JSR SPI_READ
+    STA TXTTAB
+    JSR SPI_READ
+    STA TXTTAB+1
+    JSR SPI_READ
+    STA VARTAB
+    JSR SPI_READ
+    STA VARTAB+1
+    JSR SPI_READ
+    STA ARYTAB
+    JSR SPI_READ
+    STA ARYTAB+1
+
+    LDY #$00
+@load_loop:
+    JSR SPI_READ
+    CMP #$FF
+    BEQ @load_end
+
+    STA (TXTTAB), Y
+
+    INY
+    BNE @load_loop ; TODO: handle this better
+
+@load_end:
+    JSR SPI_DISABLE
+
     RTS
 
 ; Modifies:
 SAVE:
+    JSR SPI_ENABLE
+    LDA #$06 ; Write enable
+    JSR SPI_WRITE
+    JSR SPI_DISABLE
+
+    JSR SPI_ENABLE
+    LDA #$C7 ; Chip erase
+    JSR SPI_WRITE
+    JSR SPI_DISABLE
+
+    JSR SPI_WAIT ; Wait for erasing
+
+    JSR SPI_ENABLE
+    LDA #$06 ; Write enable
+    JSR SPI_WRITE
+    JSR SPI_DISABLE
+
+    JSR SPI_ENABLE
+    LDA #$02 ; Page program
+    JSR SPI_WRITE
+
+    LDA #$00 ; First block
+    JSR SPI_WRITE
+    LDA #$00
+    JSR SPI_WRITE
+    LDA #$00
+    JSR SPI_WRITE
+
+    ; Saving *TAB
+    LDA TXTTAB
+    JSR SPI_WRITE
+    LDA TXTTAB+1
+    JSR SPI_WRITE
+    LDA VARTAB
+    JSR SPI_WRITE
+    LDA VARTAB+1
+    JSR SPI_WRITE
+    LDA ARYTAB
+    JSR SPI_WRITE
+    LDA ARYTAB+1
+    JSR SPI_WRITE
+
+    LDY #$00
+@save_loop:
+    LDA (TXTTAB), Y
+    CMP #$AA
+    BEQ @save_end
+
+    JSR SPI_WRITE
+
+    INY
+    BNE @save_loop ; TODO: handle this better
+
+@save_end:
+    JSR SPI_DISABLE
+
+    JSR SPI_WAIT ; Wait for writing
+
     RTS
 
 ; Modifies: 

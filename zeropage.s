@@ -16,6 +16,8 @@ READ_PTR:
 	.res 1
 WRITE_PTR:
 	.res 1
+SPI_SR:
+	.res 1
 .org ZP_START2
 Z15:
 	.res 1
