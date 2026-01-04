@@ -33,35 +33,47 @@ LOAD:
     LDA #$00
     JSR SPI_WRITE
 
-    ; Loading *TAB
-    JSR SPI_READ
-    STA TXTTAB
-    JSR SPI_READ
-    STA TXTTAB+1
-    JSR SPI_READ
-    STA VARTAB
-    JSR SPI_READ
-    STA VARTAB+1
-    JSR SPI_READ
-    STA ARYTAB
-    JSR SPI_READ
-    STA ARYTAB+1
+    LDA #<RAMSTART2
+    STA FLPTR
+    LDA #>RAMSTART2
+    STA FLPTR+1
 
-    LDY #$00
+    ; TXTTAB-1 must be NULL
+    LDA #$00
+    TAY
+    STA (FLPTR), Y
+    INC FLPTR
+
+    LDA FLPTR
+    STA TXTTAB
+    LDA FLPTR+1
+    STA TXTTAB+1
+
 @load_loop:
     JSR SPI_READ
     CMP #$FF
     BEQ @load_end
 
-    STA (TXTTAB), Y
+    LDY #$00
+    STA (FLPTR),Y
 
-    INY
-    BNE @load_loop ; TODO: handle this better
+    INC FLPTR
+    BNE @load_loop
+    INC FLPTR+1
+    JMP @load_loop
 
 @load_end:
     JSR SPI_DISABLE
 
-    RTS
+    LDA FLPTR
+    STA VARTAB
+    STA ARYTAB
+    LDA FLPTR+1
+    STA VARTAB+1
+    STA ARYTAB+1
+
+    JMP FIX_LINKS
+    RTS ; Should never execute this
 
 ; Modifies:
 SAVE:
@@ -93,30 +105,27 @@ SAVE:
     LDA #$00
     JSR SPI_WRITE
 
-    ; Saving *TAB
     LDA TXTTAB
-    JSR SPI_WRITE
+    STA FLPTR
     LDA TXTTAB+1
-    JSR SPI_WRITE
-    LDA VARTAB
-    JSR SPI_WRITE
-    LDA VARTAB+1
-    JSR SPI_WRITE
-    LDA ARYTAB
-    JSR SPI_WRITE
-    LDA ARYTAB+1
-    JSR SPI_WRITE
+    STA FLPTR+1
+
+@save_loop:
+    LDA FLPTR
+    CMP VARTAB
+    LDA FLPTR+1
+    SBC VARTAB+1
+    BCS @save_end ; FLPTR >= VARTAB, end for TXTTAB
 
     LDY #$00
-@save_loop:
-    LDA (TXTTAB), Y
-    CMP #$AA
-    BEQ @save_end
-
+    LDA (FLPTR),Y
     JSR SPI_WRITE
 
-    INY
-    BNE @save_loop ; TODO: handle this better
+    ; 16-bit INC
+    INC FLPTR
+    BNE @save_loop
+    INC FLPTR+1
+    JMP @save_loop
 
 @save_end:
     JSR SPI_DISABLE

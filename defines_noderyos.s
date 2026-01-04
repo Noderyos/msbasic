@@ -5,9 +5,9 @@ CONFIG_SCRTCH_ORDER := 2
 
 ; zero page
 ZP_START1 = $00
-ZP_START2 = $0D
-ZP_START3 = $63
-ZP_START4 = $6E
+ZP_START2 = $0F
+ZP_START3 = $65
+ZP_START4 = $70
 
 ; extra/override ZP variables
 USR := GORESTART

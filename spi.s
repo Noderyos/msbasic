@@ -68,7 +68,7 @@ SPI_READ:
 ; Modifies: A, X
 SPI_WRITE:
     PHY
-    STA SPI_SR
+    STA SPISR
 
     LDX #$08
 
@@ -78,7 +78,7 @@ SPI_WRITE:
     TAY
 
 @spi_w_loop:
-    ROL SPI_SR
+    ROL SPISR
     TYA
     ROL
 
