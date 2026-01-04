@@ -15,3 +15,6 @@
 .ifdef SYM1
 .include "sym1_loadsave.s"
 .endif
+.ifdef NODERYOS
+.include "noderyos_loadsave.s"
+.endif
