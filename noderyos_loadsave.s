@@ -74,6 +74,16 @@ SAVE:
 
     JSR SPI_WAIT ; Wait for erasing
 
+
+    PHY
+    LDY #$00
+
+    LDA TXTTAB
+    STA FLPTR
+    LDA TXTTAB+1
+    STA FLPTR+1
+
+@next_page:
     JSR SPI_ENABLE
     LDA #$06 ; Write enable
     JSR SPI_WRITE
@@ -85,18 +95,15 @@ SAVE:
 
     LDA #$00 ; First block
     JSR SPI_WRITE
-    LDA #$00
-    JSR SPI_WRITE
+
+    SEC
+    LDA FLPTR+1   ; Current RAM page
+    SBC TXTTAB+1  ; Start RAM page
+    JSR SPI_WRITE ; Current page index
+
     LDA #$00
     JSR SPI_WRITE
 
-    LDA TXTTAB
-    STA FLPTR
-    LDA TXTTAB+1
-    STA FLPTR+1
-
-    PHY
-    LDY #$00
 @save_loop:
     ; Compare FLPTR+Y to VARTAB <=> end of TXTTAB
     TYA
@@ -118,8 +125,11 @@ SAVE:
 
     INY
     BNE @save_loop
+
     INC FLPTR+1
-    JMP @save_loop
+    JSR SPI_DISABLE
+    JSR SPI_WAIT    ; Wait for page write
+    JMP @next_page
 
 @save_end:
     PLY
