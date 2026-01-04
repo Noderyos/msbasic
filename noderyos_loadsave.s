@@ -98,17 +98,25 @@ SAVE:
     PHY
     LDY #$00
 @save_loop:
-    LDA FLPTR
-    CMP VARTAB
-    LDA FLPTR+1
-    SBC VARTAB+1
-    BCS @save_end ; FLPTR >= VARTAB, end for TXTTAB
+    ; Compare FLPTR+Y to VARTAB <=> end of TXTTAB
+    TYA
+    CLC
+    ADC FLPTR
+    TAX             ; Low byte sum -> X
+    LDA #$00
+    ADC FLPTR+1     ; High byte sum -> A
 
+    CMP VARTAB+1
+    BCC @continue   ; if High < VARTAB High, keep going
+    BNE @save_end   ; if High > VARTAB High, stop
+    CPX VARTAB      ; if High == VARTAB High, check Low
+    BCS @save_end
+
+@continue:
     LDA (FLPTR),Y
     JSR SPI_WRITE
 
-    ; 16-bit INC
-    INC FLPTR
+    INY
     BNE @save_loop
     INC FLPTR+1
     JMP @save_loop

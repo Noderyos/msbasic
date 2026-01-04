@@ -6,6 +6,7 @@ SPI_SI  = %00000001 ; PB0
 SPI_CLK = %00000010 ; PB1 CB1
 SPI_CSB = %00000100 ; PB2
 
+; Modifies: A
 SPI_INIT:
     LDA DDRB
     ORA #(SPI_SI | SPI_CLK | SPI_CSB)
@@ -96,7 +97,7 @@ SPI_WRITE:
     PLY
     RTS
 
-; Modifies: A
+; Modifies: A, X
 SPI_WAIT:
     JSR SPI_ENABLE
 
