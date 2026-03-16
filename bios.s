@@ -50,7 +50,7 @@ CHRIN:
 CHROUT:
     PHA
     STA     ACIA_DATA
-    LDA     #$FF
+    LDA     #$80            ; ~$80*5 + start + end =~ 15200 bps at 8N1
 @txdelay:       
     DEC
     BNE     @txdelay
