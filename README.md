@@ -55,6 +55,10 @@ The following symbols can be defined in addition:
 | CONFIG_SMALL                      | use 6 digit FP instead of 9 digit, use 2 character error messages, don't have GET
 | CONFIG_SMALL_ERROR                | use 2 character error messages
 
+| Additional symbols | Platform | Description
+|--------------------| -------- | -----------
+| CONFIG_7E1         | noderyos | tx/rx 7e1 over 8n1 serial port
+
 Changing symbol definitions can alter an existing base configuration, but it not guaranteed to assemble
 or work correctly.
 

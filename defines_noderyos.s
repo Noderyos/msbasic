@@ -3,6 +3,9 @@ CONFIG_2C := 1
 
 CONFIG_SCRTCH_ORDER := 2
 
+; Send 7E1 over 8N1 (W65C51 doesn't support parity)
+CONFIG_7E1 := 1
+
 ; zero page
 ZP_START1 = $00
 ZP_START2 = $0F
